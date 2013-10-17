@@ -7,12 +7,12 @@ README = open(os.path.join(os.path.dirname(__file__), 'README.md')).read()
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
-    name='tastypiedoc',
-    version='0.1',
+    name='django-tastypiedoc',
+    version='0.2.0',
     packages=['tastypiedoc'],
     include_package_data=True,
-    license='BSD License',  # example license
-    description='A simple Django app to show tastypie api docs.',
+    license='MIT License',  # example license
+    description='A simple Django app to explore tastypie APIs.',
     long_description=README,
     url='http://www.hiiamchris.com/',
     author='Chris Duranti',
@@ -21,7 +21,6 @@ setup(
         'Environment :: Web Environment',
         'Framework :: Django',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: BSD License', # example license
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         # replace these appropriately if you are using Python 3

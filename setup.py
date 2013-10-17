@@ -1,7 +1,7 @@
 import os
 from setuptools import setup
 
-README = open(os.path.join(os.path.dirname(__file__), 'README.rst')).read()
+README = open(os.path.join(os.path.dirname(__file__), 'README.md')).read()
 
 # allow setup.py to be run from any path
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
@@ -14,9 +14,9 @@ setup(
     license='BSD License',  # example license
     description='A simple Django app to show tastypie api docs.',
     long_description=README,
-    url='http://www.example.com/',
-    author='Your Name',
-    author_email='yourname@example.com',
+    url='http://www.hiiamchris.com/',
+    author='Chris Duranti',
+    author_email='chrisd1891@gmail.com',
     classifiers=[
         'Environment :: Web Environment',
         'Framework :: Django',

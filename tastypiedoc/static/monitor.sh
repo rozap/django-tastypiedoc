@@ -1,4 +1,4 @@
 #!/bin/sh
 while inotifywait -e modify less/wifarer less/bootstrap; do
-  make
+  lessc less/all.less > css/style.css
 done

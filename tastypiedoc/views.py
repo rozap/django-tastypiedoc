@@ -1,7 +1,8 @@
 # Create your views here.
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-
+from django.conf import settings
+import json
 
 
 class AbstractEntityFactory(object):
@@ -11,7 +12,7 @@ class AbstractEntityFactory(object):
 
 
     def get_url(self, u):
-        return '/lbs_api/v1/' + '/'.join(u['namespace'].split(':')[1:])
+        return settings.TASTYPIEDOC['api_root'] + '/'.join(u['namespace'].split(':')[1:])
 
     def get_list_url_kwargs(self, u):
         kwargs = []
@@ -57,8 +58,7 @@ class AbstractEntityFactory(object):
         self.kwargs = self.get_detail_url_kwargs(u)
 
 
-    #We aren't using this set functionality,
-    #so don't document it
+    #TODO functionality for set endpoints
     # def create_entity_api_get_multiple(self, u):
     #     self.entity_type = self.get_entity_type(u)
     #     self.url = self.get_url(u) + '/set'
@@ -117,5 +117,6 @@ class ApiDisplay(object):
 
     def index(self, request):
         return render_to_response('index.html', {
-            'entities' : self.entity_groups
+            'entities' : self.entity_groups,
+            'tastypiedoc_settings' : json.dumps(settings.TASTYPIEDOC)
         }, RequestContext(request))

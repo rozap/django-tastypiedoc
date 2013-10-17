@@ -1,6 +1,9 @@
 $(document).on('ready', function() {
 
 
+	/**
+		Sets any authorization headers for the API
+	**/
 	var beforeSend = function(request) {
 		request.setRequestHeader('Authorization', localStorage['tastypieDocAuth']);
 	};
@@ -8,6 +11,11 @@ $(document).on('ready', function() {
 		beforeSend = new Function(TASTYPIEDOC_SETTINGS['beforeSend']);
 	};
 
+
+	/**
+		Given a response from posting to an API endpoint, store an authorization header
+		value in the localStorage
+	**/
 	var parseApiKey = function(resp) {
 		localStorage['tastypieDocAuth'] = 'ApiKey ' + resp.user.email + ':' + resp.key;
 		onSuccess(resp);
@@ -17,6 +25,11 @@ $(document).on('ready', function() {
 		parseApiKey = new Function('response', TASTYPIEDOC_SETTINGS['parseApiKey']);
 	};
 
+
+	/**
+		Given a username and password, create an object to post to the server
+		to get an API key back
+	**/
 	var encodeLogin = function(username, password) {
 		return {
 			username: username,
@@ -54,12 +67,17 @@ $(document).on('ready', function() {
 		});
 	}
 
+
+	/**
+		Replace the url template with the kwargs that the user has entered in 
+		the applicable kwarg input fields. Return the actual url with values entered
+		in it
+	**/
+
 	function parameterizeUrl($target) {
 		var entType = $target.data('entitytype'),
 			method = $target.data('method'),
 			url = $target.data('url');
-
-
 
 		$('#' + entType + '-' + method + '-kwargs input').each(function(i, e) {
 			var $e = $(e),
@@ -72,6 +90,8 @@ $(document).on('ready', function() {
 		return url;
 	}
 
+
+
 	function onError(resp) {
 		console.log(resp);
 		$('#action-error').show();
@@ -81,6 +101,7 @@ $(document).on('ready', function() {
 	}
 
 	function onSuccess(resp) {
+		console.log(resp);
 		$('#action-result').html(jsonToHTMLString(resp));
 		$('#action-error').hide();
 	}

@@ -1,27 +1,46 @@
-# Create your views here.
+    # Create your views here.
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.conf import settings
 import json
 
 
-class AbstractEntityFactory(object):
+class AbstractEntity(object):
 
     def get_entity_type(self, u):
-        return u['namespace'].split(':')[-1]
+        ns = u['namespace'].split(':')[-1]
+        url_map = settings.TASTYPIEDOC.get('namespaceurlmap', {})
+        return url_map.get(ns, ns)
 
+    #Allow namespaces to not correspond directly to url tokens by accepting a configurable
+    #map of namespace->url tokens. so if an entity is namespaces as 
+    #       foo_namespace:bar_namespace:entity
+    # then if we had the following namespaceurlmap
+    #       { 'foo_namespace' : 'foo', 'bar_namespace' : 'bar' }
+    # then it would generate the following url
+    #       /foo/{foo_id}/bar/{bar_id}/entity
+    def namespace_to_url(self, namespace_tokens):
+        namespace_url_map = settings.TASTYPIEDOC.get('namespaceurlmap', {})
+        url_tokens = [namespace_url_map.get(t, t) for t in namespace_tokens]
+        return url_tokens
 
     def get_url(self, u):
-        return settings.TASTYPIEDOC['api_root'] + '/'.join(u['namespace'].split(':')[1:])
+        ns = u['namespace'].split(':')[1:]
+        url_tokens = self.namespace_to_url(ns)
+        return settings.TASTYPIEDOC['api_root'] + '/'.join(url_tokens)
 
     def get_list_url_kwargs(self, u):
         kwargs = []
         namespace_tokens = u['namespace'].split(':')[1:]
-        parameterized_url = None
-        for tok in namespace_tokens:
-            if not tok == self.entity_type:
-                kwargs.append(tok)
+        url_tokens = self.namespace_to_url(namespace_tokens)
+        #parameterized_url_tokens is a list of tokens that require a parameter after
+        #them. So if 
+        parameterized_url_tokens = settings.TASTYPIEDOC.get('params_required_for', [])
 
+        parameterized_url = None
+        for tok in url_tokens:
+            if not tok == self.entity_type and tok in parameterized_url_tokens:
+                kwargs.append(tok)
                 #Parameterize the url
                 url_tok = '%s/' % tok
                 tok_param = '%s_kwarg' % tok
@@ -29,7 +48,6 @@ class AbstractEntityFactory(object):
                 before_tok = split_url[0]
                 after_tok = split_url[1]
                 self.url = '%s%s{%s}/%s' % (before_tok, url_tok, tok_param, after_tok)
-
         return kwargs
 
     def get_detail_url_kwargs(self, u):
@@ -100,7 +118,7 @@ class ApiDisplay(object):
 
 
     def create_entity(self, u):
-        ent = AbstractEntityFactory().create(u)
+        ent = AbstractEntity().create(u)
         return ent
 
 
